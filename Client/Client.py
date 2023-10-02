@@ -10,7 +10,7 @@ client.connect((HOST, PORT))
 # Função para enviar comandos ao servidor e receber respostas
 def send_request(command):
     client.send(command.encode('utf-8'))
-    response = client.recv(10000000).decode('utf-8')
+    response = client.recv(1000000000).decode('utf-8')
 
     # Verifica se a resposta contém dados de arquivo
     if response.startswith('ARQUIVO'):
@@ -21,7 +21,7 @@ def send_request(command):
         # Salva o conteúdo do arquivo no diretório local do cliente
         caminho_arquivo = os.path.join(os.getcwd(), arquivo_nome)
         with open(caminho_arquivo, 'wb') as arquivo:
-            arquivo.write(arquivo_conteudo.encode('latin-1'))
+            arquivo.write(arquivo_conteudo.encode('utf-8'))
 
         return f'Arquivo {arquivo_nome} recebido e salvo localmente!'
     else:
@@ -50,11 +50,12 @@ try:
             response = send_request('LISTAR')
         elif choice == '5':
             response = send_request('SAIR')
+            client.close()
             break
         else:
             response = 'Comando inválido.'
 
-        print('Resposta do servidor:', response)
+        print(response)
 
 except KeyboardInterrupt:
     client.close()
